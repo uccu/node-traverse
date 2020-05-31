@@ -1,0 +1,16 @@
+
+language: node_js
+node_js:
+  - '10'
+before_install:
+  - npm i npminstall -g
+install:
+  - npminstall
+script:
+  - nyc npm test
+  - nyc report --reporter=text-lcov > coverage.lcov
+after_script:
+  - npminstall codecov && codecov
+branches:
+  only:
+    - master
