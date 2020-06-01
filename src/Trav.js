@@ -21,6 +21,7 @@ class Trav {
         this.isFile = false;
         this.isDirectory = false;
         this.childrens = [];
+        this.directoryArr = [];
 
         this.options = options;
         this.handerOptions();
@@ -44,25 +45,34 @@ class Trav {
             throw new Error('path \'' + this.fullPath + '\' is not exist');
         }
 
-
         this.ext = this.options.ext || Trav.DEFAULT_EXT;
-        this.dir = this.options.dir || this.fullPath;
+
         this.firstLetterType = this.options.firstLetterType || Trav.FIRST_LETTER_TYPE.DEFAULT;
         this.importType = this.options.importType || Trav.IMPORT_TYPE.DEFAULT;
 
-        this.dir = Path.resolve(this.dir);
+        this._setDir();
         this.path = Path.relative(this.dir, this.fullPath);
-        this.directoryArr = this.path ? this.path.split(Path.sep).slice(0, -1) : [];
+        
 
-        this.name = Path.basename(this.fullPath, this.ext);
-
-        this._setFirstLetter();
+        this._setName();
+        this._setDirectoryArr();
 
     }
 
+    _setDir() {
+        this.dir = this.options.dir || this.fullPath;
+        this.dir = Path.resolve(this.dir);
+    }
 
-    _setFirstLetter() {
+    _setDirectoryArr() {
+        if (this.path) {
+            this.directoryArr = this.path.split(Path.sep).slice(0, -1);
+        }
+    }
 
+    _setName() {
+
+        this.name = Path.basename(this.fullPath, this.ext);
         let changedMethod;
 
         switch (this.firstLetterType) {
