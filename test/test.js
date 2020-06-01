@@ -3,7 +3,7 @@
 const assert = require('power-assert');
 const path = require('path');
 const fs = require('fs');
-const Trav = require('../src/trav');
+const Trav = require('../src/Trav');
 
 describe('Global', function() {
     before(function() {
