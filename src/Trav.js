@@ -107,7 +107,7 @@ class Trav {
 
         this.isDirectory = true;
         this.directoryName = Path.basename(this.fullPath);
-        this.directoryFullName = this.fullPath;
+        this.directoryFullPath = this.fullPath;
 
         const childrens = {}, directorys = {};
         const cloneOptions = Object.assign(
