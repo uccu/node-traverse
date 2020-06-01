@@ -56,13 +56,23 @@ class Trav {
 
         this.name = Path.basename(this.fullPath, this.ext);
 
-        if (this.firstLetterType === Trav.FIRST_LETTER_TYPE.LOWER_CASE) {
-            this.name = this.name.replace(this.name[0], this.name[0].toLowerCase());
+        this._setFirstLetter();
+
+    }
+
+
+    _setFirstLetter() {
+
+        let changedMethod;
+
+        switch (this.firstLetterType) {
+            case Trav.FIRST_LETTER_TYPE.LOWER_CASE:
+                changedMethod = 'toLowerCase'; break;
+            case Trav.FIRST_LETTER_TYPE.UPPER_CASE:
+                changedMethod = 'toUpperCase'; break;
         }
 
-        if (this.firstLetterType === Trav.FIRST_LETTER_TYPE.UPPER_CASE) {
-            this.name = this.name.replace(this.name[0], this.name[0].toUpperCase());
-        }
+        this.name = this.name.replace(this.name[0], this.name[0][changedMethod]());
 
     }
 
@@ -88,11 +98,17 @@ class Trav {
         this.directoryFullName = this.fullPath;
 
         const childrens = {}, directorys = {};
-        const cloneOptions = Object.assign({}, this.options, { dir: this.dir });
+        const cloneOptions = Object.assign(
+            {},
+            this.options,
+            { dir: this.dir }
+        );
 
         fs.readdirSync(this.fullPath).forEach(name => {
+
             const path = Path.join(this.fullPath, name);
             const trav = new Trav(path, cloneOptions);
+
             if (trav.isDirectory) {
                 directorys[trav.name] = trav;
             } else {
@@ -100,14 +116,17 @@ class Trav {
             }
         });
 
+        this._setChildrens();
 
+    }
+
+    _setChildrens(childrens, directorys) {
         for (const d in directorys) {
             if (childrens[d]) {
                 childrens[d].mergeDirectory(directorys[d]);
             } else {
                 childrens[d] = directorys[d];
             }
-
         }
         for (const c in childrens) {
             this.childrens.push(childrens[c]);
@@ -123,27 +142,33 @@ class Trav {
     }
 
 
-    _import(...p) {
+    _import() {
 
         let cla = {};
+
         if (this.isFile) {
             cla = require(this.fullPath);
-            if (this.importType === Trav.IMPORT_TYPE.CLASS_INSTANCE) {
-                cla = new cla(...p);
-            }
-            if (this.importType === Trav.IMPORT_TYPE.CLASS_AUTO) {
-                const f = cla;
-                cla = (...x) => new f(...x);
-                Object.assign(cla, f);
+
+            switch (this.importType) {
+                case Trav.IMPORT_TYPE.CLASS_INSTANCE:
+                    cla = new cla(); break;
+                case Trav.IMPORT_TYPE.CLASS_AUTO:
+                    const f = cla;
+                    cla = (...x) => new f(...x);
+                    Object.assign(cla, f);
             }
         }
+
         if (this.isDirectory) {
             this.childrens.forEach(child => {
-                Object.defineProperty(cla, child.name, {
-                    get: function() {
-                        return child._import();
+
+                Object.defineProperty(
+                    cla,
+                    child.name,
+                    {
+                        get: () => child._import()
                     }
-                });
+                );
             })
         }
 
