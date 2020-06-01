@@ -15,7 +15,7 @@ class Trav {
         }
 
         if (isString(path)) {
-            this.rowPath = path;
+            this.rawPath = path;
         }
 
         this.isFile = false;
@@ -35,12 +35,12 @@ class Trav {
             throw new TypeError('param options is not an object');
         }
 
-        this.options.rowPath = this.rowPath = this.rowPath || this.options.rowPath;
-        if (!this.rowPath) {
+        this.options.rawPath = this.rawPath = this.rawPath || this.options.rawPath;
+        if (!this.rawPath) {
             throw new Error('path is not exist');
         }
 
-        this.fullPath = Path.resolve(this.rowPath);
+        this.fullPath = Path.resolve(this.rawPath);
         if (!fs.existsSync(this.fullPath)) {
             throw new Error('path \'' + this.fullPath + '\' is not exist');
         }
@@ -52,7 +52,7 @@ class Trav {
 
         this._setDir();
         this.path = Path.relative(this.dir, this.fullPath);
-        
+
 
         this._setName();
         this._setDirectoryArr();
@@ -82,7 +82,9 @@ class Trav {
                 changedMethod = 'toUpperCase'; break;
         }
 
-        this.name = this.name.replace(this.name[0], this.name[0][changedMethod]());
+        if (changedMethod) {
+            this.name = this.name.replace(this.name[0], this.name[0][changedMethod]());
+        }
 
     }
 
@@ -126,7 +128,7 @@ class Trav {
             }
         });
 
-        this._setChildrens();
+        this._setChildrens(childrens, directorys);
 
     }
 
