@@ -15,3 +15,20 @@ Bind a directory to an object and load the modules in the directory dynamically.
 ```javscript
 npm i node-traverse
 ```
+
+### HOW TO USE
+```javascript
+#   myFolder
+#    ├ A_CLASS.js
+#    ├ B_function.js
+#    └ c_Object.js
+
+
+const path = require('path');
+const Trav = require('node-traverse');
+const trav = new Trav.importDirectory('myFolder');
+trav.A_CLASS;   ✔
+trav.B_function;   ✔
+trav.c_Object;   ✔
+
+```
