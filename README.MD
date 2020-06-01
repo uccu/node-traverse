@@ -1,5 +1,8 @@
 
-[![GitHub issues](https://img.shields.io/github/issues/uccu/files-import)](https://github.com/uccu/node-traverse/issues)
+[![Build Status](https://www.travis-ci.org/uccu/node-traverse.svg?branch=master)](https://www.travis-ci.org/uccu/node-traverse)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d5514d5c92235d5b7d68/maintainability)](https://codeclimate.com/github/uccu/node-traverse/maintainability)
+[![codecov](https://codecov.io/gh/uccu/node-traverse/branch/master/graph/badge.svg)](https://codecov.io/gh/uccu/node-traverse)
+[![GitHub issues](https://img.shields.io/github/issues/uccu/node-traverse)](https://github.com/uccu/node-traverse/issues)
 ![GitHub](https://img.shields.io/github/license/uccu/node-traverse)
 
 ### LICENSE
