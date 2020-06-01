@@ -31,8 +31,5 @@
     "nyc": "^15.0.1",
     "power-assert": "^1.6.1"
   },
-  "dependencies": {
-    "files-import": "^1.4.1",
-    "isobject": "^4.0.0"
-  }
+  "dependencies": {}
 }
