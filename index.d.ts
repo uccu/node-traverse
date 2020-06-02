@@ -20,7 +20,6 @@ declare module 'node-traverse' {
 
         public isDirectory: boolean
         public isFile: boolean
-        public childrens: Trav[]
         public directoryArr: string[]
         public options: Options
         public fullPath: string

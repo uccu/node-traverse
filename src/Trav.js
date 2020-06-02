@@ -20,7 +20,6 @@ class Trav {
 
         this.isFile = false;
         this.isDirectory = false;
-        this.childrens = [];
         this.directoryArr = [];
         this.instanceParams = [];
 
@@ -111,6 +110,13 @@ class Trav {
         this.directoryName = Path.basename(this.fullPath);
         this.directoryFullPath = this.fullPath;
 
+    }
+
+    _getChildrens() {
+        if (!this.isDirectory) {
+            return [];
+        }
+
         const childrens = {}, directorys = {};
         const cloneOptions = Object.assign(
             {},
@@ -118,9 +124,9 @@ class Trav {
             { dir: this.dir }
         );
 
-        fs.readdirSync(this.fullPath).forEach(name => {
+        fs.readdirSync(this.directoryFullPath).forEach(name => {
 
-            const path = Path.join(this.fullPath, name);
+            const path = Path.join(this.directoryFullPath, name);
             const trav = new Trav(path, cloneOptions);
 
             if (trav.isDirectory) {
@@ -130,11 +136,11 @@ class Trav {
             }
         });
 
-        this._setChildrens(childrens, directorys);
-
+        return this._setChildrens(childrens, directorys);
     }
 
     _setChildrens(childrens, directorys) {
+        const oChildrens = [];
         for (const d in directorys) {
             if (childrens[d]) {
                 childrens[d]._mergeDirectory(directorys[d]);
@@ -143,16 +149,17 @@ class Trav {
             }
         }
         for (const c in childrens) {
-            this.childrens.push(childrens[c]);
+            oChildrens.push(childrens[c]);
         }
+
+        return oChildrens;
     }
 
 
     _mergeDirectory(trav) {
         this.isDirectory = true;
-        this.directoryFullName = trav.directoryFullName;
+        this.directoryFullPath = trav.directoryFullPath;
         this.directoryName = trav.directoryName;
-        this.childrens = trav.childrens;
     }
 
 
@@ -176,18 +183,21 @@ class Trav {
             cla = cl;
         }
 
-        if (this.isDirectory) {
-            this.childrens.forEach(child => {
+        this._getChildrens().forEach(child => {
 
-                Object.defineProperty(
-                    cla,
-                    child.name,
-                    {
-                        get: () => child._import()
+            Object.defineProperty(
+                cla,
+                child.name,
+                {
+                    configurable: true,
+                    get: () => {
+                        const ret = child._import();
+                        Object.defineProperty(cla, child.name, { value: ret });
+                        return ret;
                     }
-                );
-            })
-        }
+                }
+            );
+        });
 
         return cla;
     }
