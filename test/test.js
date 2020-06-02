@@ -12,7 +12,7 @@ describe('Global', function() {
         fs.writeFileSync(path.join(__dirname, 'testDirectory', 'Bfile'), 'module.exports=2');
         fs.writeFileSync(path.join(__dirname, 'testDirectory', 'Cfile'), 'module.exports={a:1}');
         fs.writeFileSync(path.join(__dirname, 'testDirectory', 'Dirle'), 'module.exports=class Dirle{get a(){return 2}};module.exports.b=3;');
-        fs.writeFileSync(path.join(__dirname, 'testDirectory', 'eirle.js'), 'module.exports=class Eirle{}');
+        fs.writeFileSync(path.join(__dirname, 'testDirectory', 'eirle.js'), 'module.exports=class Eirle{constructor(a){this.b=a}}');
         fs.mkdirSync(path.join(__dirname, 'testDirectory', 'Adirectory'));
         fs.writeFileSync(path.join(__dirname, 'testDirectory', 'Adirectory', 'Cfile'), 'module.exports=3');
         fs.mkdirSync(path.join(__dirname, 'testDirectory', 'Eirle'));
@@ -101,6 +101,14 @@ describe('Global', function() {
 
         it('constructor', function() {
             new Trav(path.join(__dirname, 'testDirectory'));
+        });
+
+        it('instanceParams', function() {
+            const trav = Trav.import(
+                path.join(__dirname, 'testDirectory'),
+                { instanceParams: ['test'], importType: Trav.IMPORT_TYPE.CLASS_INSTANCE }
+            );
+            assert.equal(trav.eirle.b, 'test', 'fail');
         });
     });
 });

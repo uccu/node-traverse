@@ -22,6 +22,7 @@ class Trav {
         this.isDirectory = false;
         this.childrens = [];
         this.directoryArr = [];
+        this.instanceParams = [];
 
         this.options = options;
         this._handerOptions();
@@ -49,6 +50,7 @@ class Trav {
 
         this.firstLetterType = this.options.firstLetterType || Trav.FIRST_LETTER_TYPE.DEFAULT;
         this.importType = this.options.importType || Trav.IMPORT_TYPE.DEFAULT;
+        this.instanceParams = this.options.instanceParams || [];
 
         this._setDir();
         this.path = Path.relative(this.dir, this.fullPath);
@@ -163,7 +165,7 @@ class Trav {
 
             switch (this.importType) {
                 case Trav.IMPORT_TYPE.CLASS_INSTANCE:
-                    cl = new cl(); break;
+                    cl = new cl(...this.instanceParams); break;
                 case Trav.IMPORT_TYPE.CLASS_AUTO: {
                     const f = cl;
                     cl = (...x) => new f(...x);

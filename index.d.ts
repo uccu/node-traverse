@@ -7,6 +7,7 @@ declare module 'node-traverse' {
         rawPath?: string;
         ext?: string;
         firstLetterType?: number;
+        instanceParams?: any[];
     }
 
     class Trav {
@@ -30,6 +31,7 @@ declare module 'node-traverse' {
         public path: string
         public dir: string
         public name: string
+        public instanceParams: any[]
 
         public fileName?: string
         public directoryName?: string
