@@ -26,7 +26,7 @@ npm i node-traverse
 
 const path = require('path');
 const Trav = require('node-traverse');
-const trav = new Trav.importDirectory('myFolder');
+const trav = new Trav.import('myFolder');
 trav.A_CLASS;   ✔
 trav.B_function;   ✔
 trav.c_Object;   ✔
