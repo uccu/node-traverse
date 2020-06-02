@@ -24,12 +24,12 @@ class Trav {
         this.directoryArr = [];
 
         this.options = options;
-        this.handerOptions();
-        this.handerFileOptions();
-        this.handerDirectoryOptions();
+        this._handerOptions();
+        this._handerFileOptions();
+        this._handerDirectoryOptions();
     }
 
-    handerOptions() {
+    _handerOptions() {
 
         if (!isObject(this.options)) {
             throw new TypeError('param options is not an object');
@@ -88,7 +88,7 @@ class Trav {
 
     }
 
-    handerFileOptions() {
+    _handerFileOptions() {
 
         const stat = fs.statSync(this.fullPath);
         if (!stat.isFile())
@@ -99,7 +99,7 @@ class Trav {
 
     }
 
-    handerDirectoryOptions() {
+    _handerDirectoryOptions() {
 
         const stat = fs.statSync(this.fullPath);
         if (!stat.isDirectory())
@@ -135,7 +135,7 @@ class Trav {
     _setChildrens(childrens, directorys) {
         for (const d in directorys) {
             if (childrens[d]) {
-                childrens[d].mergeDirectory(directorys[d]);
+                childrens[d]._mergeDirectory(directorys[d]);
             } else {
                 childrens[d] = directorys[d];
             }
@@ -146,7 +146,7 @@ class Trav {
     }
 
 
-    mergeDirectory(trav) {
+    _mergeDirectory(trav) {
         this.isDirectory = true;
         this.directoryFullName = trav.directoryFullName;
         this.directoryName = trav.directoryName;
@@ -159,16 +159,19 @@ class Trav {
         let cla = {};
 
         if (this.isFile) {
-            cla = require(this.fullPath);
+            let cl = require(this.fullPath);
 
             switch (this.importType) {
                 case Trav.IMPORT_TYPE.CLASS_INSTANCE:
-                    cla = new cla(); break;
-                case Trav.IMPORT_TYPE.CLASS_AUTO:
-                    const f = cla;
-                    cla = (...x) => new f(...x);
-                    Object.assign(cla, f);
+                    cl = new cl(); break;
+                case Trav.IMPORT_TYPE.CLASS_AUTO: {
+                    const f = cl;
+                    cl = (...x) => new f(...x);
+                    Object.assign(cl, f);
+                }
             }
+
+            cla = cl;
         }
 
         if (this.isDirectory) {
@@ -187,7 +190,7 @@ class Trav {
         return cla;
     }
 
-    static importDirectory(path, options = {}) {
+    static import(path, options = {}) {
         const trav = new Trav(path, options);
         return trav._import();
     }

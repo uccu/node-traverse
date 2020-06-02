@@ -34,14 +34,14 @@ describe('Global', function() {
 
     describe('Trav', function() {
         it('normal path', function() {
-            const trav = Trav.importDirectory(path.join(__dirname, 'testDirectory'));
+            const trav = Trav.import(path.join(__dirname, 'testDirectory'));
             assert.equal(trav.Afile, 1, 'fail');
             assert.equal(trav.Bfile, 2, 'fail');
             assert.equal(trav.Adirectory.Cfile, 3, 'fail');
         });
 
         it('path in options', function() {
-            const trav = Trav.importDirectory({ rawPath: path.join(__dirname, 'testDirectory') });
+            const trav = Trav.import({ rawPath: path.join(__dirname, 'testDirectory') });
             assert.equal(trav.Afile, 1, 'fail');
             assert.equal(trav.Bfile, 2, 'fail');
             assert.equal(trav.Adirectory.Cfile, 3, 'fail');
@@ -49,25 +49,25 @@ describe('Global', function() {
 
         it('param options is not a object', function() {
             try {
-                Trav.importDirectory(path.join(__dirname, 'testDirectory'), 'sss');
-                assert.doesNotThrow('not throw');
-            } catch (e) { }
+                Trav.import(path.join(__dirname, 'testDirectory'), 'sss');
+                assert(false, 'not throw');
+            } catch (e) { return 0 }
         });
         it('param path is not exist', function() {
             try {
-                Trav.importDirectory();
-                assert.doesNotThrow('not throw');
-            } catch (e) { }
+                Trav.import();
+                assert(false, 'not throw');
+            } catch (e) { return 0 }
         });
         it('path is not exist', function() {
             try {
-                Trav.importDirectory('wwwww');
-                assert.doesNotThrow('not throw');
-            } catch (e) { }
+                Trav.import('wwwww');
+                assert(false, 'not throw');
+            } catch (e) { return 0 }
         });
 
         it('UPPER_CASE', function() {
-            const trav = Trav.importDirectory(path.join(__dirname, 'testDirectory'),
+            const trav = Trav.import(path.join(__dirname, 'testDirectory'),
                 { firstLetterType: Trav.FIRST_LETTER_TYPE.UPPER_CASE }
             );
             assert(trav.Eirle, 'fail');
@@ -75,7 +75,7 @@ describe('Global', function() {
         });
 
         it('LOWER_CASE', function() {
-            const trav = Trav.importDirectory(path.join(__dirname, 'testDirectory'),
+            const trav = Trav.import(path.join(__dirname, 'testDirectory'),
                 { firstLetterType: Trav.FIRST_LETTER_TYPE.LOWER_CASE }
             );
             assert(!trav.Afile, 'fail');
@@ -83,14 +83,14 @@ describe('Global', function() {
         });
 
         it('CLASS_INSTANCE', function() {
-            const trav = Trav.importDirectory(path.join(__dirname, 'testDirectory'),
+            const trav = Trav.import(path.join(__dirname, 'testDirectory'),
                 { importType: Trav.IMPORT_TYPE.CLASS_INSTANCE }
             );
             assert.equal(trav.Dirle.a, 2, 'fail');
         });
 
         it('CLASS_AUTO', function() {
-            const trav = Trav.importDirectory(path.join(__dirname, 'testDirectory'),
+            const trav = Trav.import(path.join(__dirname, 'testDirectory'),
                 { importType: Trav.IMPORT_TYPE.CLASS_AUTO }
             );
 
