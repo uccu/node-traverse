@@ -74,11 +74,12 @@ describe('Global', function() {
         });
 
         it('UPPER_CASE', function() {
-            const trav = Trav.import(path.join(__dirname, 'testDirectory'),
-                { firstLetterType: Trav.FIRST_LETTER_TYPE.UPPER_CASE }
-            );
-            assert(trav.dirle, 'fail');
-            assert(trav.Dirle, 'fail');
+            const trav = Trav.import('adirectory', {
+                baseDir: path.join( __dirname ,'testDirectory'),
+                firstLetterType: Trav.FIRST_LETTER_TYPE.UPPER_CASE
+            });
+            assert(trav.Cfile, 'fail');
+            assert(trav.cfile, 'fail');
         });
 
         it('LOWER_CASE', function() {
