@@ -1,6 +1,6 @@
 {
   "name": "node-traverse",
-  "version": "0.1.4",
+  "version": "1.0.1",
   "description": "Bind a directory to an object and load the modules in the directory dynamically.",
   "main": "index.js",
   "scripts": {
@@ -31,5 +31,7 @@
     "nyc": "^15.0.1",
     "power-assert": "^1.6.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "is": "^3.3.0"
+  }
 }

@@ -2,19 +2,17 @@
 
 const fs = require('fs');
 const Path = require('path');
-const isObject = require('./utils/isObject');
-const isString = require('./utils/isString');
-
+const is = require('is');
 
 class Trav {
 
     constructor(path, options = {}) {
 
-        if (isObject(path)) {
+        if (is.object(path)) {
             options = path;
         }
 
-        if (isString(path)) {
+        if (is.string(path)) {
             this.rawPath = path;
         }
 
@@ -31,52 +29,43 @@ class Trav {
 
     _handerOptions() {
 
-        if (!isObject(this.options)) {
+        if (!is.object(this.options)) {
             throw new TypeError('param options is not an object');
         }
 
-        this.options.rawPath = this.rawPath = this.rawPath || this.options.rawPath;
-        if (!this.rawPath) {
+        const defaults = {
+            rawPath: this.rawPath,
+            baseDir: process.cwd(),
+            ext: Trav.DEFAULT_EXT,
+            firstLetterType: Trav.FIRST_LETTER_TYPE.DEFAULT,
+            importType: Trav.IMPORT_TYPE.DEFAULT,
+            instanceParams: [],
+        }
+
+        this.options = Object.assign(defaults, this.options);
+
+        if (!this.options.rawPath) {
             throw new Error('path is not exist');
         }
 
-        this.fullPath = Path.resolve(this.rawPath);
-        if (!fs.existsSync(this.fullPath)) {
-            throw new Error('path \'' + this.fullPath + '\' is not exist');
-        }
-
-        this.ext = this.options.ext || Trav.DEFAULT_EXT;
-
-        this.firstLetterType = this.options.firstLetterType || Trav.FIRST_LETTER_TYPE.DEFAULT;
-        this.importType = this.options.importType || Trav.IMPORT_TYPE.DEFAULT;
-        this.instanceParams = this.options.instanceParams || [];
-
-        this._setDir();
-        this.path = Path.relative(this.dir, this.fullPath);
-
-
         this._setName();
-        this._setDirectoryArr();
 
-    }
-
-    _setDir() {
-        this.dir = this.options.dir || this.fullPath;
-        this.dir = Path.resolve(this.dir);
-    }
-
-    _setDirectoryArr() {
-        if (this.path) {
-            this.directoryArr = this.path.split(Path.sep).slice(0, -1);
+        if (Path.isAbsolute(this.options.rawPath)) {
+            this.fullPath = this.options.rawPath;
+        } else {
+            this.fullPath = Path.resolve(this.options.baseDir, this.options.rawPath);
         }
+
+        this.fullPath = Path.join(Path.dirname(this.fullPath), this.name);
+        this.path = Path.relative(this.options.baseDir, this.fullPath);
     }
 
     _setName() {
 
-        this.name = Path.basename(this.fullPath, this.ext);
+        this.name = Path.basename(this.options.rawPath);
         let changedMethod;
 
-        switch (this.firstLetterType) {
+        switch (this.options.firstLetterType) {
             case Trav.FIRST_LETTER_TYPE.LOWER_CASE:
                 changedMethod = 'toLowerCase'; break;
             case Trav.FIRST_LETTER_TYPE.UPPER_CASE:
@@ -91,75 +80,34 @@ class Trav {
 
     _handerFileOptions() {
 
-        const stat = fs.statSync(this.fullPath);
+
+        let filePath = this.fullPath;
+        if (fs.existsSync(filePath + this.options.ext)) {
+            filePath += this.options.ext;
+        } else if (!fs.existsSync(filePath)) {
+            return;
+        }
+
+        const stat = fs.statSync(filePath);
         if (!stat.isFile())
             return;
 
         this.isFile = true;
-        this.fileName = Path.basename(this.fullPath, this.ext);
-
+        this.filePath = filePath;
     }
 
     _handerDirectoryOptions() {
+
+        if (!fs.existsSync(this.fullPath)) {
+            return;
+        }
 
         const stat = fs.statSync(this.fullPath);
         if (!stat.isDirectory())
             return;
 
         this.isDirectory = true;
-        this.directoryName = Path.basename(this.fullPath);
-        this.directoryFullPath = this.fullPath;
-
-    }
-
-    _getChildrens() {
-        if (!this.isDirectory) {
-            return [];
-        }
-
-        const childrens = {}, directorys = {};
-        const cloneOptions = Object.assign(
-            {},
-            this.options,
-            { dir: this.dir }
-        );
-
-        fs.readdirSync(this.directoryFullPath).forEach(name => {
-
-            const path = Path.join(this.directoryFullPath, name);
-            const trav = new Trav(path, cloneOptions);
-
-            if (trav.isDirectory) {
-                directorys[trav.name] = trav;
-            } else {
-                childrens[trav.name] = trav;
-            }
-        });
-
-        return this._setChildrens(childrens, directorys);
-    }
-
-    _setChildrens(childrens, directorys) {
-        const oChildrens = [];
-        for (const d in directorys) {
-            if (childrens[d]) {
-                childrens[d]._mergeDirectory(directorys[d]);
-            } else {
-                childrens[d] = directorys[d];
-            }
-        }
-        for (const c in childrens) {
-            oChildrens.push(childrens[c]);
-        }
-
-        return oChildrens;
-    }
-
-
-    _mergeDirectory(trav) {
-        this.isDirectory = true;
-        this.directoryFullPath = trav.directoryFullPath;
-        this.directoryName = trav.directoryName;
+        this.directoryPath = this.fullPath;
     }
 
 
@@ -168,11 +116,12 @@ class Trav {
         let cla = {};
 
         if (this.isFile) {
-            let cl = require(this.fullPath);
+            let cl = require(this.filePath);
 
-            switch (this.importType) {
+            switch (this.options.importType) {
                 case Trav.IMPORT_TYPE.CLASS_INSTANCE:
-                    cl = new cl(...this.instanceParams); break;
+                    cl = new cl(...this.options.instanceParams);
+                    break;
                 case Trav.IMPORT_TYPE.CLASS_AUTO: {
                     const f = cl;
                     cl = (...x) => new f(...x);
@@ -183,28 +132,32 @@ class Trav {
             cla = cl;
         }
 
-        this._getChildrens().forEach(child => {
-
-            Object.defineProperty(
-                cla,
-                child.name,
-                {
-                    configurable: true,
-                    get: () => {
-                        const ret = child._import();
-                        Object.defineProperty(cla, child.name, { value: ret });
-                        return ret;
-                    }
-                }
-            );
-        });
-
         return cla;
     }
 
     static import(path, options = {}) {
         const trav = new Trav(path, options);
-        return trav._import();
+
+        let importData = trav._import();
+
+        if (!trav.isDirectory) {
+            if (!trav.isFile)
+                return undefined;
+            return importData;
+        }
+
+        if (!is.object(importData) && !is.function(importData)) {
+            importData = {};
+        }
+
+        return new Proxy(importData, {
+            get: function get(target, key) {
+                if (is.defined(target[key])) return target[key];
+                // @ts-ignore
+                target[key] = Trav.import(Path.join(trav.fullPath, key), options);
+                return target[key];
+            }
+        });
     }
 
 

@@ -18,17 +18,39 @@ npm i node-traverse
 
 ### HOW TO USE
 ```javascript
-#   myFolder
-#    ├ A_CLASS.js
-#    ├ B_function.js
-#    └ c_Object.js
+#   game
+#    ├ user
+#    │  └ weapon.js -------- exports.id = 3;
+#    ├ Fashion.js   -------- exports.getList = function(){ return 1; };
+#    ├ Fashion
+#    │  └ hair.js   -------- exports.id = 4;
+#    ├ friend.js    -------- module.exports=class{constructor(n){this.n = n};static n=2;};
+#    └ user.js      -------- exports.id = 2;
 
 
-const path = require('path');
 const Trav = require('node-traverse');
-const trav = new Trav.import('myFolder');
-trav.A_CLASS;   ✔
-trav.B_function;   ✔
-trav.c_Object;   ✔
+const trav = Trav.import('test/game', { baseDir: process.cwd() });
 
+trav.Fashion.getList();   // 1
+trav.Fashion.hair.id;     // 4
+trav.user.id;             // 2
+trav.user.weapon.id;      // 3
+
+
+
+const trav = Trav.import('game', {
+    baseDir: __dirname,
+    importType: Trav.IMPORT_TYPE.CLASS_INSTANCE,
+    instanceParams: ['hee'],
+});
+
+trav.friend.n;             // hee;
+
+const trav = Trav.import('game', {
+    baseDir: __dirname,
+    importType: Trav.IMPORT_TYPE.CLASS_AUTO,
+});
+
+trav.friend.n;             // 2;
+trav.friend('hee').n;      // hee;
 ```
