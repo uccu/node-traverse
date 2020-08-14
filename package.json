@@ -1,6 +1,6 @@
 {
   "name": "node-traverse",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Bind a directory to an object and load the modules in the directory dynamically.",
   "main": "index.js",
   "scripts": {
