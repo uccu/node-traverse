@@ -4,6 +4,11 @@ const fs = require('fs');
 const Path = require('path');
 const is = require('is');
 
+
+function _checkNonObjectAndNonFunction(data) {
+    return !is.object(data) && !is.function(data);
+}
+
 class Trav {
 
     constructor(path, options = {}) {
@@ -139,19 +144,23 @@ class Trav {
         const trav = new Trav(path, options);
         let importData = trav._import();
 
-        if (!trav.isDirectory) {
-            if (!trav.isFile)
-                return undefined;
+        if (trav._checkNonDirectoryAndNonFile()) {
+            return undefined;
+        }
+
+        if (trav._checkNonDirectory()) {
             return importData;
         }
 
-        if (!is.object(importData) && !is.function(importData)) {
+        if (_checkNonObjectAndNonFunction(importData)) {
             importData = {};
         }
 
         return new Proxy(importData, {
-            get: function get(target, key) {
-                if (is.defined(target[key])) return target[key];
+            get(target, key) {
+                if (is.defined(target[key])) {
+                    return target[key];
+                }
 
                 const newPath = Path.join(trav.fullPath, key.toString());
                 target[key] = Trav.import(newPath, options);
@@ -161,6 +170,15 @@ class Trav {
         });
     }
 
+
+    _checkNonDirectory() {
+        return !this.isDirectory;
+    }
+
+
+    _checkNonDirectoryAndNonFile() {
+        return !this.isDirectory && !this.isFile;
+    }
 
 }
 
