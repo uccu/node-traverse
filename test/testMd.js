@@ -13,7 +13,7 @@ describe('Global', function() {
         fs.writeFileSync(path.join(__dirname, 'game', 'user', 'weapon.js'), 'exports.id = 3;');
         fs.writeFileSync(path.join(__dirname, 'game', 'Fashion.js'), 'exports.getList = function(){ return 1; };');
         fs.writeFileSync(path.join(__dirname, 'game', 'Fashion', 'hair.js'), 'exports.id = 4;');
-        fs.writeFileSync(path.join(__dirname, 'game', 'friend.js'), 'module.exports=class{constructor(n){this.n = n};static n=2;};');
+        fs.writeFileSync(path.join(__dirname, 'game', 'friend.js'), 'class A{constructor(n){this.n = n}};A.n=2;module.exports=A;');
         fs.writeFileSync(path.join(__dirname, 'game', 'user.js'), 'exports.id = 2');
     });
 

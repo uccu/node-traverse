@@ -24,7 +24,7 @@ npm i node-traverse
 #    ├ Fashion.js   -------- exports.getList = function(){ return 1; };
 #    ├ Fashion
 #    │  └ hair.js   -------- exports.id = 4;
-#    ├ friend.js    -------- module.exports=class{constructor(n){this.n = n};static n=2;};
+#    ├ friend.js    -------- class A{constructor(n){this.n = n}};A.n=2;module.exports=A;
 #    └ user.js      -------- exports.id = 2;
 
 

@@ -77,15 +77,16 @@ describe('Global', function() {
             const trav = Trav.import(path.join(__dirname, 'testDirectory'),
                 { firstLetterType: Trav.FIRST_LETTER_TYPE.UPPER_CASE }
             );
-            assert(!trav.wEirle.f, 'fail');
+            assert(trav.dirle, 'fail');
+            assert(trav.Dirle, 'fail');
         });
 
         it('LOWER_CASE', function() {
             const trav = Trav.import(path.join(__dirname, 'testDirectory'),
                 { firstLetterType: Trav.FIRST_LETTER_TYPE.LOWER_CASE }
             );
-            assert(trav.Afile, 'fail');
-            assert(trav.afile, 'fail');
+            assert(trav.wEirle, 'fail');
+            assert(trav.WEirle, 'fail');
         });
 
         it('CLASS_INSTANCE', function() {
