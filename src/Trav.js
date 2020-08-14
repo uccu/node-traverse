@@ -137,7 +137,6 @@ class Trav {
 
     static import(path, options = {}) {
         const trav = new Trav(path, options);
-
         let importData = trav._import();
 
         if (!trav.isDirectory) {
@@ -153,8 +152,10 @@ class Trav {
         return new Proxy(importData, {
             get: function get(target, key) {
                 if (is.defined(target[key])) return target[key];
-                // @ts-ignore
-                target[key] = Trav.import(Path.join(trav.fullPath, key), options);
+
+                const newPath = Path.join(trav.fullPath, key.toString());
+                target[key] = Trav.import(newPath, options);
+
                 return target[key];
             }
         });
