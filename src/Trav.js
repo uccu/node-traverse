@@ -158,7 +158,7 @@ class Trav {
 
         return new Proxy(importData, {
             get(target, key) {
-                if (is.defined(target[key])) {
+                if (key in target) {
                     return target[key];
                 }
 
